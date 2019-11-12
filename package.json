@@ -1,0 +1,51 @@
+{
+  "name": "geotoolbox",
+  "version": "1.0.0",
+  "description": "A toolbox for GIS openAPIs",
+  "main": "index.js",
+  "scripts": {
+    "test": "cross-env NODE_ENV=development electron ./electron/main.js",
+    "start": "cross-env NODE_ENV=production electron ./electron/main.js",
+    "watch": "webpack-dev-server --mode=development --config ./configs/webpack.config.dev.js",
+    "build:dev": "webpack --config=./configs/webpack.config.dev.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/hjylxmhzq/GeoToolbox.git"
+  },
+  "keywords": [
+    "geo",
+    "GIS",
+    "electron"
+  ],
+  "author": "tonyWho",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hjylxmhzq/GeoToolbox/issues"
+  },
+  "homepage": "https://github.com/hjylxmhzq/GeoToolbox#readme",
+  "devDependencies": {
+    "@types/react": "^16.9.11",
+    "@types/react-dom": "^16.9.4",
+    "@types/classnames": "^2.2.9",
+    "awesome-typescript-loader": "^5.2.1",
+    "classnames": "^2.2.6",
+    "clean-webpack-plugin": "^3.0.0",
+    "cross-env": "^6.0.3",
+    "css-loader": "^3.2.0",
+    "electron": "^7.1.1",
+    "html-webpack-plugin": "^3.2.0",
+    "less": "^3.10.3",
+    "less-loader": "^5.0.0",
+    "style-loader": "^1.0.0",
+    "typescript": "^3.7.2",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.9.0",
+    "webpack-merge": "^4.2.2"
+  },
+  "dependencies": {
+    "react": "^16.11.0",
+    "react-dom": "^16.11.0"
+  }
+}

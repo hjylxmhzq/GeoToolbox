@@ -1,0 +1,21 @@
+.left-container {
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+    &::after {
+        content: "";
+        width: 2px;
+        background-color: #ccc;
+        display: block;
+        position: absolute;
+        height: 100vh;
+        right: 0;
+        top: 0;
+        cursor: ew-resize;
+    }
+}
+
+.right-container {
+    height: 100vh;
+    flex-grow: 1;
+}
