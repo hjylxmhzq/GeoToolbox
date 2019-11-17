@@ -1,4 +1,4 @@
-const Menu = require('electron').Menu;
+import { Menu } from 'electron';
 
 let template = [{
     label: '编辑',
@@ -81,23 +81,6 @@ let template = [{
         role: 'close'
     }, {
         type: 'separator'
-    }, {
-        label: '重新打开窗口',
-        accelerator: 'CmdOrCtrl+Shift+T',
-        enabled: false,
-        key: 'reopenMenuItem',
-        click: function () {
-            app.emit('activate')
-        }
-    }]
-}, {
-    label: '帮助',
-    role: 'help',
-    submenu: [{
-        label: '学习更多',
-        click: function () {
-            electron.shell.openExternal('http://electron.atom.io')
-        }
     }]
 }]
 
@@ -114,4 +97,4 @@ function initMenu() {
     Menu.setApplicationMenu(menu)
 }
 
-module.exports = initMenu;
+export default initMenu;

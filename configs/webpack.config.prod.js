@@ -5,7 +5,7 @@ const baseConfig = require('./webpack.config.base');
 
 module.exports = {
   ...baseConfig,
-  mode: "development", // "production" | "development" | "none"
+  mode: "production", // "production" | "development" | "none"
   // Chosen mode tells webpack to use its built-in optimizations accordingly.
   entry: {
     App: path.resolve(__dirname, '../src/index.tsx'),

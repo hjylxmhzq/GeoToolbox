@@ -1,8 +1,8 @@
-const createWindow = require('./createWindow');
+import createWindow from './createWindow';
 
-function appFac(app) {
+function appFac(app: Electron.App) {
 
-    app.on('ready', createWindow);
+    app.on('ready', createWindow.bind(this, 'main', 'http://localhost:8080/index.html', '../dist/index.html'));
 
     // 当全部窗口关闭时退出。
     app.on('window-all-closed', () => {
@@ -14,10 +14,10 @@ function appFac(app) {
     })
 
     app.on('activate', () => {
-        if (global.wins.main === null) {
-            createWindow();
+        if (globalThis.wins.main === null) {
+            createWindow('main', 'http://localhost:8080/index.html', '../dist/index.html');
         }
     })
 }
 
-module.exports = appFac;
+export default appFac;

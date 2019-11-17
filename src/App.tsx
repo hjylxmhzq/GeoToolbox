@@ -1,7 +1,14 @@
 import React, { Component } from 'react';
-import classnames from 'classnames';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+} from "react-router-dom";
 import './App.less';
+import './styles/iconfont.css';
 import Layout from './components/Layout';
+import Menu, { menuTemplate } from './components/Menu';
+import FileList from './components/FileList';
 
 const MIN_LEFT_WIDTH = 150;
 const MAX_LEFT_WIDTH = 650;
@@ -58,6 +65,8 @@ class App extends Component<IAppProps, IAppState> {
         onMouseMove={this.onResizeLeftMouseMove.bind(this)}
       >
         <Layout
+          left={<Menu menu={menuTemplate} />}
+          right={<RightPanelRouter />}
           leftWidth={this.state.leftWidth}
         />
       </div>
@@ -65,4 +74,24 @@ class App extends Component<IAppProps, IAppState> {
   }
 }
 
-export default App;
+function RightPanelRouter() {
+  return (
+    <Route path="/filelist">
+      <FileList />
+    </Route>
+  )
+}
+
+function AppRouter() {
+  return (
+    <Router>
+      <Switch>
+        <Route path="/">
+          <App />
+        </Route>
+      </Switch>
+    </Router>
+  )
+}
+
+export default AppRouter;

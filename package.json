@@ -2,12 +2,13 @@
   "name": "geotoolbox",
   "version": "1.0.0",
   "description": "A toolbox for GIS openAPIs",
-  "main": "index.js",
+  "main": "./electron-dist/main.js",
   "scripts": {
-    "test": "cross-env NODE_ENV=development electron ./electron/main.js",
-    "start": "cross-env NODE_ENV=production electron ./electron/main.js",
+    "test": "webpack --mode=development --config=./configs/webpack.electron.config.js && cross-env NODE_ENV=development electron ./electron-dist/main.js",
+    "start": "webpack --mode=production --config=./configs/webpack.electron.config.js && cross-env NODE_ENV=production electron ./electron-dist/main.js",
     "watch": "webpack-dev-server --mode=development --config ./configs/webpack.config.dev.js",
-    "build:dev": "webpack --config=./configs/webpack.config.dev.js"
+    "build:dev": "webpack --config=./configs/webpack.config.dev.js",
+    "build:electron": "webpack --config=./configs/webpack.electron.config.js"
   },
   "repository": {
     "type": "git",
@@ -23,11 +24,14 @@
   "bugs": {
     "url": "https://github.com/hjylxmhzq/GeoToolbox/issues"
   },
+  "types": "typings/global.d.ts",
   "homepage": "https://github.com/hjylxmhzq/GeoToolbox#readme",
   "devDependencies": {
+    "@types/classnames": "^2.2.9",
     "@types/react": "^16.9.11",
     "@types/react-dom": "^16.9.4",
-    "@types/classnames": "^2.2.9",
+    "@types/react-router": "^5.1.3",
+    "@types/react-router-dom": "^5.1.2",
     "awesome-typescript-loader": "^5.2.1",
     "classnames": "^2.2.6",
     "clean-webpack-plugin": "^3.0.0",
@@ -46,6 +50,9 @@
   },
   "dependencies": {
     "react": "^16.11.0",
-    "react-dom": "^16.11.0"
+    "react-dom": "^16.11.0",
+    "react-router": "^5.1.2",
+    "react-router-dom": "^5.1.2",
+    "sqlite3": "^4.1.0"
   }
 }

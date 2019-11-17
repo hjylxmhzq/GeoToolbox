@@ -3,6 +3,8 @@ import './Layout.less';
 
 interface ILayoutProps {
   leftWidth: number;
+  left: React.ReactElement;
+  right: React.ReactElement;
 }
 
 interface ILayoutState {
@@ -19,18 +21,18 @@ class Layout extends Component<ILayoutProps, ILayoutState> {
   }
 
   render() {
-    const { leftWidth: minLeftWidth } = this.props;
+    const { leftWidth, left, right } = this.props;
     return (
       <>
         <div
           className="left-container"
           style={{
-            width: this.props.leftWidth,
+            width: leftWidth,
           }}
         >
-          left
+          {left}
         </div>
-        <div className="right-container">right</div>
+        <div className="right-container">{right}</div>
       </>
     )
   }

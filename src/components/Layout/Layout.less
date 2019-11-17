@@ -1,21 +1,26 @@
 .left-container {
     height: 100vh;
     overflow: hidden;
+    overflow-y: overlay;
     position: relative;
-    &::after {
-        content: "";
-        width: 2px;
-        background-color: #ccc;
-        display: block;
-        position: absolute;
-        height: 100vh;
-        right: 0;
-        top: 0;
-        cursor: ew-resize;
-    }
+    user-select: none;
 }
 
 .right-container {
     height: 100vh;
     flex-grow: 1;
+    position: relative;
+    &::before {
+        transition: all 0.5s;
+        content: "";
+        width: 2px;
+        background-color: #e2e2e2;
+        display: block;
+        position: absolute;
+        height: 100vh;
+        left: 0;
+        top: 0;
+        cursor: ew-resize;
+        box-shadow: 1px 0px 4px 0px #ccc;
+    }
 }

@@ -1,9 +1,9 @@
-const { BrowserWindow } = require('electron');
+import { BrowserWindow } from 'electron';
 
-function createWindow() {
+function createWindow(windowName: string, url: string, path: string) {
     // 创建浏览器窗口。
-    let wins = global.wins;
-    wins.main = new BrowserWindow({
+    let wins = globalThis.wins;
+    wins[windowName] = new BrowserWindow({
         width: 800,
         height: 600,
         webPreferences: {
@@ -13,17 +13,18 @@ function createWindow() {
 
     // 加载index.html文件
     if (process.env.NODE_ENV.includes('dev')) {
-        wins.main.loadURL('http://localhost:8080/index.html');
+        wins.main.loadURL(url);
     } else {
-        wins.main.loadFile('../dist/index.html');
+        wins.main.loadFile(path);
     }
     // 当 window 被关闭，这个事件会被触发。
-    wins.main.on('closed', () => {
+    wins[windowName].on('closed', () => {
         // 取消引用 window 对象，如果你的应用支持多窗口的话，
         // 通常会把多个 window 对象存放在一个数组里面，
         // 与此同时，你应该删除相应的元素。
-        wins.main = null
+        wins[windowName] = null
     })
+    return wins[windowName];
 }
 
-module.exports = createWindow;
+export default createWindow;
