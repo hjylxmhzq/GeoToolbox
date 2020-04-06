@@ -4,17 +4,23 @@ import {
   Switch,
   Route,
 } from "react-router-dom";
+import { Provider, connect } from 'react-redux';
+import { createStore, Store } from 'redux';
 import './App.less';
 import './styles/iconfont.css';
 import Layout from './components/Layout';
 import Menu, { menuTemplate } from './components/Menu';
-import FileList from './components/FileList';
+import FileList from './rightPanels/FileList';
+import Modal from './components/Modal';
+import { globalReducer, IStore } from './redux/reducers';
+import BaiduLBSIntroduction from './rightPanels/BaiduLBS';
 
 const MIN_LEFT_WIDTH = 150;
 const MAX_LEFT_WIDTH = 650;
-const DEFAULT_LEFT_WIDTH = 300;
+const DEFAULT_LEFT_WIDTH = 150;
 
 interface IAppProps {
+  showModal: boolean;
 }
 
 interface IAppState {
@@ -28,7 +34,7 @@ class App extends Component<IAppProps, IAppState> {
     super(props);
     this.state = {
       isResize: false,
-      leftWidth: 300
+      leftWidth: DEFAULT_LEFT_WIDTH
     }
   }
 
@@ -69,25 +75,47 @@ class App extends Component<IAppProps, IAppState> {
           right={<RightPanelRouter />}
           leftWidth={this.state.leftWidth}
         />
+        <Modal></Modal>
       </div>
     )
   }
 }
 
+function mapStateToProps(state: IStore) {
+  return {
+    showModal: state.showModal,
+  };
+}
+
+function mapDispatchToProps() {
+  return {};
+}
+
 function RightPanelRouter() {
   return (
-    <Route path="/filelist">
-      <FileList />
-    </Route>
+    <Switch>
+      <Route path="/filelist">
+        <FileList />
+      </Route>
+      <Route path="/baidulbs">
+        <BaiduLBSIntroduction />
+      </Route>
+    </Switch>
   )
 }
+
+const store: Store = createStore(globalReducer);
+globalThis.reduxStore = store;
+const ConnectedApp = connect(mapStateToProps, mapDispatchToProps)(App);
 
 function AppRouter() {
   return (
     <Router>
       <Switch>
         <Route path="/">
-          <App />
+          <Provider store={store}>
+            <ConnectedApp />
+          </Provider>
         </Route>
       </Switch>
     </Router>

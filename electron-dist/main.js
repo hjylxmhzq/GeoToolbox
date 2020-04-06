@@ -134,15 +134,17 @@ function createWindow(windowName, url, path) {
     wins[windowName] = new electron_2.BrowserWindow({
         width: 800,
         height: 600,
+        minHeight: 400,
+        minWidth: 650,
         webPreferences: {
             nodeIntegration: true
         }
     });
     if ("development".includes('dev')) {
-        wins.main.loadURL(url);
+        wins[windowName].loadURL(url);
     }
     else {
-        wins.main.loadFile(path);
+        wins[windowName].loadFile(path);
     }
     wins[windowName].on('closed', function () {
         wins[windowName] = null;
@@ -191,10 +193,11 @@ var sqlite_2 = __importDefault(__webpack_require__(/*! ../sqlite */ "./electron/
 var fs_1 = __importDefault(__webpack_require__(/*! fs */ "fs"));
 var globalEnum_1 = __webpack_require__(/*! ../../enums/globalEnum */ "./enums/globalEnum.ts");
 var createWindow_2 = __importDefault(__webpack_require__(/*! ../createWindow */ "./electron/createWindow.ts"));
+var index_1 = __webpack_require__(/*! @logger/index */ "./logger/index.ts");
 function addOpenFileHandler(ipcMain) {
     ipcMain.on(globalEnum_1.IpcInterface.OPEN_FILE, function (event) {
         var files = electron_3.dialog.showOpenDialogSync({
-            properties: ['openFile', 'openDirectory']
+            properties: ['openFile']
         });
         if (files) {
             var promises = [];
@@ -213,12 +216,15 @@ function addOpenFileHandler(ipcMain) {
 }
 function addGetFileHandler(ipcMain) {
     ipcMain.on(globalEnum_1.IpcInterface.GET_FILE, function (event, path) {
+        index_1.logger.info('ipc handler: get file');
         fs_1.default.readFile(path, function (err, fileContent) {
             if (err) {
-                event.sender.send(globalEnum_1.IpcInterface.GET_FILE_RESPONSE, fileContent.toString('utf-8'));
+                index_1.logger.error(err);
+                event.sender.send(globalEnum_1.IpcInterface.GET_FILE_RESPONSE, '');
             }
             else {
-                event.sender.send(globalEnum_1.IpcInterface.GET_FILE_RESPONSE, '');
+                index_1.logger.info(fileContent);
+                event.sender.send(globalEnum_1.IpcInterface.GET_FILE_RESPONSE, fileContent.toString('utf-8'));
             }
         });
     });
@@ -240,9 +246,47 @@ function addOpenFileEditorHandler(ipcMain) {
         else {
             var win_1 = createWindow_2.default('fileEditor', 'http://localhost:8080/fileEditor.html', '../dist/fileEditor.html');
             win_1.webContents.on('did-finish-load', function () {
-                win_1.webContents.send(globalEnum_1.IpcInterface.GET_FILE, filePath);
+                index_1.logger.info('ipc: get file');
+                fs_1.default.readFile(filePath, function (err, fileContent) {
+                    if (err) {
+                        index_1.logger.error(err);
+                        win_1.webContents.send(globalEnum_1.IpcInterface.GET_FILE_RESPONSE, '');
+                    }
+                    else {
+                        index_1.logger.info(fileContent);
+                        win_1.webContents.send(globalEnum_1.IpcInterface.GET_FILE_RESPONSE, fileContent.toString('utf-8'));
+                    }
+                });
             });
         }
+    });
+}
+function addOpenTourGuideHandler(ipcMain) {
+    ipcMain.on(globalEnum_1.IpcInterface.OPEN_TOUR_GUIDE, function (event, tourPage) {
+        console.log('open guide page');
+        if (!globalThis.wins.tourGuide) {
+            var win = createWindow_2.default('tourGuide', "http://localhost:8080/tourGuide.html?page=" + tourPage, "../dist/tourGuide.html?page=" + tourPage);
+        }
+    });
+}
+function addTokenHandler(ipcMain) {
+    ipcMain.on(globalEnum_1.IpcInterface.ADD_TOKEN, function (event, token) {
+        console.log(globalEnum_1.IpcInterface.ADD_TOKEN, token);
+        sqlite_2.default.addToken(token.name, token.value, token.type);
+    });
+}
+function deleteTokenHandler(ipcMain) {
+    ipcMain.on(globalEnum_1.IpcInterface.DELETE_TOKEN, function (event, token) {
+        console.log(globalEnum_1.IpcInterface.DELETE_TOKEN);
+        sqlite_2.default.deleteToken(token.type, token.value);
+    });
+}
+function getTokensListHandler(ipcMain) {
+    ipcMain.on(globalEnum_1.IpcInterface.GET_TOKENSLIST, function (event) {
+        console.log(globalEnum_1.IpcInterface.GET_TOKENSLIST);
+        sqlite_2.default.getTokensList().then(function (tokensList) {
+            event.sender.send(globalEnum_1.IpcInterface.GET_TOKENSLIST_RESPONSE, tokensList);
+        });
     });
 }
 exports.default = [
@@ -250,6 +294,10 @@ exports.default = [
     addGetFilesListHandler,
     addGetFileHandler,
     addOpenFileEditorHandler,
+    addOpenTourGuideHandler,
+    addTokenHandler,
+    deleteTokenHandler,
+    getTokensListHandler,
 ];
 
 
@@ -465,11 +513,27 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var SQL = {
     createFileTable: function () { return "CREATE TABLE files (\n    FILEPATH TEXT NOT NULL,\n    FILECONTENT TEXT NOT NULL,\n    FILEID TEXT INT NULL\n    );"; },
     deleteFileTable: function () { return "DROP TABLE files;"; },
+    deleteTokenTable: function () { return "DROP TABLE tokens;"; },
     addFile: function (filePath, fileContent, fileId) {
         return "INSERT INTO files (FILEPATH,FILECONTENT,FILEID)\nVALUES ('" + filePath + "', '" + fileContent + "', " + fileId + ");";
     },
+    deleteFile: function (fileId) {
+        return "DELETE FROM files\n    WHERE FILEID=" + fileId + ";";
+    },
     getFilesList: function () {
         return "SELECT FILEPATH, FILEID FROM files;";
+    },
+    createTokenTable: function () {
+        return "CREATE TABLE tokens (\n      name TEXT NOT NULL,\n      value TEXT NOT NULL,\n      type TEXT NOT NULL\n      );";
+    },
+    addToken: function (name, value, type) {
+        return "INSERT INTO tokens (name, value, type)\n    VALUES ('" + name + "', '" + value + "', '" + type + "');";
+    },
+    deleteToken: function (type, value) {
+        return "DELETE FROM tokens\n    WHERE value='" + value + " AND type='" + type + "';";
+    },
+    getTokensList: function () {
+        return "SELECT name, value, type FROM tokens;";
     }
 };
 exports.default = SQL;
@@ -504,13 +568,31 @@ function initDB() {
     return new Promise(function (resolve, reject) {
         db.run(SQL_1.default.deleteFileTable(), function (e) {
             if (e === null) {
-                logger_2.default.info('delete existed files table in DB');
-                db.run(SQL_1.default.createFileTable(), function (e) {
+                db.run(SQL_1.default.deleteTokenTable(), function (e) {
                     if (e === null) {
-                        resolve();
+                        logger_2.default.info('delete existed files table in DB');
+                        db.run(SQL_1.default.createFileTable(), function (e) {
+                            if (e === null) {
+                                logger_2.default.info('create file table');
+                                db.run(SQL_1.default.createTokenTable(), function (e) {
+                                    if (e === null) {
+                                        resolve();
+                                        logger_2.default.info('create token table');
+                                    }
+                                    else {
+                                        logger_2.default.error(e);
+                                        reject(e);
+                                    }
+                                });
+                            }
+                            else {
+                                logger_2.default.error(e);
+                                reject(e);
+                            }
+                        });
                     }
                     else {
-                        reject(e);
+                        logger_2.default.error(e);
                     }
                 });
             }
@@ -518,9 +600,20 @@ function initDB() {
                 logger_2.default.error(e);
                 db.run(SQL_1.default.createFileTable(), function (e) {
                     if (e === null) {
-                        resolve();
+                        logger_2.default.info('create file table');
+                        db.run(SQL_1.default.createTokenTable(), function (e) {
+                            if (e === null) {
+                                resolve();
+                                logger_2.default.info('create token table');
+                            }
+                            else {
+                                logger_2.default.error(e);
+                                reject(e);
+                            }
+                        });
                     }
                     else {
+                        logger_2.default.error(e);
                         reject(e);
                     }
                 });
@@ -542,6 +635,20 @@ function addFile(filePath, fileContent) {
         });
     });
 }
+function deleteFile(fileId) {
+    var sql = SQL_1.default.deleteFile(fileId);
+    logger_2.default.info(sql);
+    return new Promise(function (resolve, reject) {
+        db.run(sql, function (e) {
+            if (e === null) {
+                resolve();
+            }
+            else {
+                reject(e);
+            }
+        });
+    });
+}
 function getFilesList() {
     return new Promise(function (resolve, reject) {
         db.all(SQL_1.default.getFilesList(), function (err, values) {
@@ -552,10 +659,45 @@ function getFilesList() {
         });
     });
 }
+function addToken(name, value, type) {
+    return new Promise(function (resolve, reject) {
+        db.all(SQL_1.default.addToken(name, value, type), function (err) {
+            !err && resolve();
+            if (err) {
+                logger_2.default.error(err);
+            }
+        });
+    });
+}
+function deleteToken(type, value) {
+    return new Promise(function (resolve, reject) {
+        db.all(SQL_1.default.deleteToken(type, value), function (err) {
+            !err && resolve();
+            if (err) {
+                logger_2.default.error(err);
+            }
+        });
+    });
+}
+function getTokensList() {
+    return new Promise(function (resolve, reject) {
+        db.all(SQL_1.default.getTokensList(), function (err, values) {
+            !err && resolve(values);
+            if (err) {
+                logger_2.default.error(err);
+                resolve();
+            }
+        });
+    });
+}
 exports.default = {
     initDB: initDB,
     addFile: addFile,
     getFilesList: getFilesList,
+    deleteFile: deleteFile,
+    addToken: addToken,
+    deleteToken: deleteToken,
+    getTokensList: getTokensList
 };
 
 
@@ -599,12 +741,58 @@ var IpcInterface = {
     OPEN_FILE_RESPONSE: 'open-file-response',
     OPEN_FILE_EDITOR: 'open-file-editor',
     OPEN_FIlE_EDITOR_RESPONSE: 'open-file-editor-response',
+    OPEN_TOUR_GUIDE: 'open-tour-guide',
     RELOAD_FILE: 'reload-file',
     RELOAD_FILE_RESPONSE: 'reload-file-response',
     GET_FILE_CONTENT: 'get-file-content',
     GET_FILE_CONTENT_RESPONSE: 'get-file-content-response',
+    GET_TOKENSLIST: 'get-tokenslist',
+    GET_TOKENSLIST_RESPONSE: 'get-tokenslist-response',
+    DELETE_TOKEN: 'delete-token',
+    ADD_TOKEN: 'add-token',
 };
 exports.IpcInterface = IpcInterface;
+var TourGuidePage;
+(function (TourGuidePage) {
+    TourGuidePage["BAIDU_LBS"] = "baidulbs";
+})(TourGuidePage || (TourGuidePage = {}));
+exports.TourGuidePage = TourGuidePage;
+
+
+/***/ }),
+
+/***/ "./logger/index.ts":
+/*!*************************!*\
+  !*** ./logger/index.ts ***!
+  \*************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var Logger = (function () {
+    function Logger() {
+    }
+    Logger.prototype.error = function () {
+        var msg = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            msg[_i] = arguments[_i];
+        }
+        console.error.apply(console, msg);
+    };
+    Logger.prototype.info = function () {
+        var msg = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            msg[_i] = arguments[_i];
+        }
+        console.info.apply(console, msg);
+    };
+    return Logger;
+}());
+exports.Logger = Logger;
+var logger = new Logger();
+exports.logger = logger;
 
 
 /***/ }),

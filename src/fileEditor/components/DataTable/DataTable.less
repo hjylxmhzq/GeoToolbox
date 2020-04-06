@@ -1,0 +1,98 @@
+.data-table {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: scroll;
+    & > span {
+        text-align: center;
+    }
+}
+
+.dataframe-head {
+    white-space: nowrap;
+    border-bottom: 1px solid #ccc;
+    text-align: left;
+    position: sticky;
+    top: 0;
+    background-color: #d9d9d9;
+    & > span {
+        transition: all 0.3s;
+        border-right: 1px solid #ccc;
+        border-left: 1px solid #ccc;
+        margin-left: -1px;
+        white-space: nowrap;
+        display: inline-block;
+        width: 130px;
+        line-height: 35px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        vertical-align: bottom;
+        cursor: pointer;
+        font-weight: bold;
+        padding: 0 5px;
+        &:hover {
+            background-color: #ccc;
+        }
+    }
+    & > span:first-child {
+        width: 40px;
+        text-align: center;
+        padding: 0;
+    }
+}
+
+.dataframe-row {
+    white-space: nowrap;
+    border-bottom: 1px solid #ccc;
+    text-align: left;
+    background-color: #f0f0f0;
+    height: 39px;
+    line-height: 39px;
+    & > span {
+        transition: all 0.3s;
+        border-right: 1px solid #ccc;
+        border-left: 1px solid #ccc;
+        margin-left: -1px;
+        white-space: nowrap;
+        display: inline-block;
+        width: 130px;
+        overflow: hidden;
+        padding: 0 5px;
+        &:hover {
+            box-shadow: 0px 0px 6px 1px #aaa;
+        }
+        &:active {
+            box-shadow: 0px 0px 10px 1px #aaa;
+        }
+    }
+    & > span:first-child {
+        width: 40px;
+        text-align: center;
+        padding: 0;
+    }
+}
+
+.dataframe {
+    display: inline-block;
+    text-align: center;
+    font-weight: 300;
+    font-size: 12px;
+}
+
+.dataframe-head-arrow {
+    display: inline-block;
+    transform: rotate(-90deg);
+    color: #999;
+}
+
+.dataframe-col-highlight {
+    background-color: #f6f6f6;
+}
+
+.edit-cell {
+    vertical-align: bottom;
+    height: 35px;
+    display: inline-block;
+    width: -webkit-fill-available;
+    max-width: -webkit-fill-available;
+}

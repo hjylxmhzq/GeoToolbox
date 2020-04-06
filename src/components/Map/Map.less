@@ -1,0 +1,76 @@
+.map-box {
+    width: 100vw;
+    height: 100vh;
+}
+
+.openlayers-map {
+    width: 100vw;
+    height: 100vh;
+}
+
+.map-toolbar {
+    height: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: left;
+    position: absolute;
+    top: 15px;
+    left: 50px;
+    z-index: 10;
+    box-shadow: 1px 1px 7px 2px #ccc;
+    width: 120px;
+    height: 24px;
+    background-color: #ffcece;
+}
+
+.map-toolbar-button {
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.map-toolbar-button.selected {
+    background-color: #ccc;
+}
+
+.map-toolbar-button:hover {
+    background-color: #aaa;
+}
+
+.map-toolbar-coords {
+    font-size: 12px;
+    width: 120px;
+    font-family: cursive;
+    max-height: 300px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-color: #eeeeeeaa;
+    padding: 5px;
+    box-shadow: 1px 1px 7px 2px #aaa;
+}
+
+.map-toolbar-coords::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+    background-color: #ddd;
+}
+
+.map-toolbar-coords::-webkit-scrollbar-thumb {  
+    background-color: #aaa; 
+}  
+
+.map-toolbar-coords-item {
+    transition: all 0.3s;
+    width: 110px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background-color: #e6e6e6;
+    border-bottom: 2px solid #eee;
+    padding: 2px 0;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.map-toolbar-coords-item:hover {
+    background-color: rgb(96, 160, 255);
+    color: white;
+}

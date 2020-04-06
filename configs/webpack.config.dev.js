@@ -9,7 +9,8 @@ module.exports = {
   // Chosen mode tells webpack to use its built-in optimizations accordingly.
   entry: {
     App: path.resolve(__dirname, '../src/index.tsx'),
-    fileEditor: path.resolve(__dirname, '../src/fileEditor/index.tsx')
+    fileEditor: path.resolve(__dirname, '../src/fileEditor/index.tsx'),
+    tourGuide: path.resolve(__dirname, '../src/tourGuide/index.tsx'),
   },
   target: 'electron-renderer',
   // 默认为 './src'
@@ -29,6 +30,11 @@ module.exports = {
     // libraryTarget: "umd", // 通用模块定义
     // 导出库(exported library)的类型
     /* 高级输出配置（点击显示） */
+  },
+  optimization: {
+    splitChunks: {
+      chunks: 'all'
+    }
   },
   module: {
     // 关于模块配置
@@ -56,14 +62,22 @@ module.exports = {
         rules: [
           {
             test: /\.(le|c)ss$/,
-            use: ['style-loader', 'css-loader', 'less-loader']
+            use: ['style-loader',
+              {
+                loader: 'css-loader',
+                options: {
+                  modules: false,
+                }
+              }
+              , 'less-loader'
+            ]
           },
           {
             test: /\.tsx?$/,
             loader: "awesome-typescript-loader"
           }
         ]
-      },
+      }
     ],
     /* 高级模块配置（点击展示） */
   },
@@ -82,6 +96,7 @@ module.exports = {
       "@root": path.resolve(__dirname, "../src"),
       // 起别名 "module" -> "./app/third/module.js" 和 "module/file" 会导致错误
       // 模块别名相对于当前上下文导入
+      "@logger": path.resolve(__dirname, "../logger"),
     },
   },
   devtool: "source-map",
@@ -101,13 +116,21 @@ module.exports = {
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: './pages/app.html',
-      chunks:['App'],
+      chunks: ['App'],
     }),
     new HtmlWebpackPlugin({
       filename: 'fileEditor.html',
       template: './pages/fileEditor.html',
-      chunks:['fileEditor'],
+      chunks: ['fileEditor'],
+    }),
+    new HtmlWebpackPlugin({
+      filename: 'tourGuide.html',
+      template: './pages/tourGuide.html',
+      chunks: ['tourGuide'],
     }),
     new CleanWebpackPlugin()
   ],
+  externals: {
+    'echarts/dist/extension/bmap': 'BMap'
+  },
 }

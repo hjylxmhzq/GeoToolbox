@@ -6,6 +6,8 @@ function createWindow(windowName: string, url: string, path: string) {
     wins[windowName] = new BrowserWindow({
         width: 800,
         height: 600,
+        minHeight: 400,
+        minWidth: 650,
         webPreferences: {
             nodeIntegration: true
         }
@@ -13,9 +15,9 @@ function createWindow(windowName: string, url: string, path: string) {
 
     // 加载index.html文件
     if (process.env.NODE_ENV.includes('dev')) {
-        wins.main.loadURL(url);
+        wins[windowName].loadURL(url);
     } else {
-        wins.main.loadFile(path);
+        wins[windowName].loadFile(path);
     }
     // 当 window 被关闭，这个事件会被触发。
     wins[windowName].on('closed', () => {

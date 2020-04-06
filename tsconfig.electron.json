@@ -31,6 +31,6 @@
         ]
     },
     "include": [
-        "./src/**/*", "typings", "enums", "electron", "logger"
+        "typings", "enums", "electron"
     ]
 }

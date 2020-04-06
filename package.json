@@ -4,11 +4,14 @@
   "description": "A toolbox for GIS openAPIs",
   "main": "./electron-dist/main.js",
   "scripts": {
-    "test": "webpack --mode=development --config=./configs/webpack.electron.config.js && cross-env NODE_ENV=development electron ./electron-dist/main.js",
-    "start": "webpack --mode=production --config=./configs/webpack.electron.config.js && cross-env NODE_ENV=production electron ./electron-dist/main.js",
-    "watch": "webpack-dev-server --mode=development --config ./configs/webpack.config.dev.js",
-    "build:dev": "webpack --config=./configs/webpack.config.dev.js",
-    "build:electron": "webpack --config=./configs/webpack.electron.config.js"
+    "test:electron": "webpack --mode=development --config=./configs/webpack.electron.config.js && cross-env NODE_ENV=development electron ./electron-dist/main.js",
+    "start:electron": "webpack --mode=production --config=./configs/webpack.electron.config.js && cross-env NODE_ENV=production electron ./electron-dist/main.js",
+    "watch:renderer": "webpack-dev-server --mode=development --config ./configs/webpack.config.dev.js",
+    "build:renderer.dev": "webpack --config=./configs/webpack.config.dev.js",
+    "build:renderer.prod": "webpack --config=./configs/webpack.config.dev.js",
+    "build:electron": "webpack --config=./configs/webpack.electron.config.js",
+    "postinstall": "install-app-deps",
+    "rebuild": "install-app-deps"
   },
   "repository": {
     "type": "git",
@@ -28,20 +31,25 @@
   "homepage": "https://github.com/hjylxmhzq/GeoToolbox#readme",
   "devDependencies": {
     "@types/classnames": "^2.2.9",
+    "@types/echarts": "^4.4.2",
+    "@types/node": "12.12.6",
     "@types/react": "^16.9.11",
     "@types/react-dom": "^16.9.4",
+    "@types/react-redux": "^7.1.7",
     "@types/react-router": "^5.1.3",
     "@types/react-router-dom": "^5.1.2",
     "awesome-typescript-loader": "^5.2.1",
     "classnames": "^2.2.6",
     "clean-webpack-plugin": "^3.0.0",
     "cross-env": "^6.0.3",
-    "css-loader": "^3.2.0",
+    "css-loader": "^3.4.2",
     "electron": "^7.1.1",
-    "html-webpack-plugin": "^3.2.0",
+    "electron-builder": "^22.2.0",
+    "html-webpack-plugin": "^4.0.4",
     "less": "^3.10.3",
     "less-loader": "^5.0.0",
-    "style-loader": "^1.0.0",
+    "prop-types": "^15.7.2",
+    "style-loader": "^1.1.3",
     "typescript": "^3.7.2",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10",
@@ -49,10 +57,15 @@
     "webpack-merge": "^4.2.2"
   },
   "dependencies": {
+    "echarts": "^4.6.0",
+    "echarts-for-react": "^2.0.15-beta.1",
+    "ol": "6.3.1",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
+    "react-redux": "^7.1.3",
     "react-router": "^5.1.2",
     "react-router-dom": "^5.1.2",
+    "redux": "^4.0.5",
     "sqlite3": "^4.1.0"
   }
 }

@@ -33,13 +33,21 @@ module.exports = {
         rules: [
           {
             test: /\.tsx?$/,
-            loader: "awesome-typescript-loader"
+            loader: "awesome-typescript-loader",
+            options: {
+              // ... other loader's options
+              configFileName: 'tsconfig.electron.json'
+            }
           }
         ]
       },
       {
         test: /\.tsx?$/,
-        loader: "awesome-typescript-loader"
+        loader: "awesome-typescript-loader",
+        options: {
+          // ... other loader's options
+          configFileName: 'tsconfig.electron.json'
+        }
       }
     ],
   },
@@ -57,6 +65,12 @@ module.exports = {
   resolve: {
     // 解析模块请求的选项
     extensions: [".ts", ".tsx", ".js", ".json"],
+    alias: {
+      // 起别名 "only-module" -> "new-module"，但不匹配 "only-module/path/file" -> "new-module/path/file"
+      "@logger": path.resolve(__dirname, "../logger"),
+      // 起别名 "module" -> "./app/third/module.js" 和 "module/file" 会导致错误
+      // 模块别名相对于当前上下文导入
+    },
   },
   devtool: "source-map",
 }

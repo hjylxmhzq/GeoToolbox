@@ -1,5 +1,7 @@
 import { MenuItem } from './Menu';
 import { openFile } from '@root/ipcRenderer';
+import { toggleModal } from '@root/redux/dispatchs';
+import React from 'react';
 
 const menuTemplate: MenuItem[] = [{
   name: "文件",
@@ -22,6 +24,16 @@ const menuTemplate: MenuItem[] = [{
   submenu: [{
     name: '统计数据',
     submenu: null,
+  }, {
+    name: '空间数据',
+    submenu: null,
+  }],
+},{
+  name: "OpenAPI",
+  submenu: [{
+    name: '百度LBS',
+    submenu: null,
+    link: '/baidulbs'
   }, {
     name: '空间数据',
     submenu: null,

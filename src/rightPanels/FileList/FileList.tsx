@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getFilesList, openFileEditor } from '@root/ipcRenderer';
+import './FileList.less';
 
 function FileList() {
   const [files, useFile] = useState([] as FilesList);
@@ -9,15 +10,18 @@ function FileList() {
   })
   return (
     <div>
+      <div className="filelist-head">近期文件</div>
       {files.map((file) => {
         return (
         <div
           key={file.FILEID}
           onClick={() => {
-            openFileEditor('/Users/tonyhu/Documents/docs/2019.10.21推荐书籍.md');
+            file.FILEPATH.endsWith('.csv') && openFileEditor(file.FILEPATH);
           }}
+          className="filelist-item"
         >
           {file.FILEPATH}
+          <span className="filelist-open">打开</span>
         </div>)
       })}
     </div>
